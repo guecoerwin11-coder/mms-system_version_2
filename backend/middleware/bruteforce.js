@@ -1,15 +1,3 @@
-/**
- * middleware/bruteForce.js
- * ─────────────────────────────────────────────────────────────────────────────
- * Brute force protection using Redis.
- * - Tracks failed login attempts per IP address
- * - After 10 failed attempts → blocks that IP for 5 minutes
- * - Resets counter on successful login
- *
- * If Redis is unavailable, falls through silently (fail-open)
- * so the app still works without Redis in development.
- * ─────────────────────────────────────────────────────────────────────────────
- */
 
 const redis = require('redis');
 

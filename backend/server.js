@@ -13,11 +13,11 @@ const {
 const app  = express();
 const PORT = process.env.PORT || 5005;
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'https://mms-system-indol.vercel.app'
-];
+// const allowedOrigins = [
+//   'http://localhost:3000',
+//   'http://localhost:3001',
+//   'https://mms-system-indol.vercel.app'
+// ];
 
 app.use(cors({ 
   origin: process.env.CLIENT_URL || 'http://localhost:3001', 

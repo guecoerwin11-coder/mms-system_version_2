@@ -14,9 +14,9 @@ const QUICK_ASKS = [
 export default function AIAssistant() {
   const [messages, setMessages] = useState([{
     role: 'assistant',
-    content: 'Hello! I\'m your AI assistant for MMS: Video Editing. I can help with OBS Studio, DaVinci Resolve, color grading, export settings, pre-production planning, and all things video editing. What would you like to learn?'
+    content: "Hello! I'm your AI assistant for MMS: Video Editing. I can help with OBS Studio, DaVinci Resolve, color grading, export settings, pre-production planning, and all things video editing. What would you like to learn?"
   }]);
-  const [input,   setInput]   = useState('');
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
 
@@ -46,7 +46,6 @@ export default function AIAssistant() {
       const { data } = await aiAPI.chat({ message: msg, history });
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
     } catch (err) {
-      // Extract custom error message sent by your backend API response
       const serverErrorMessage = err.response?.data?.message;
       const isRateLimited = err.response?.status === 429;
 
@@ -57,11 +56,10 @@ export default function AIAssistant() {
           content: serverErrorMessage 
         }]);
       } else {
-        // Fallback for real network failures or server crashes
         toast.error('AI is unavailable. Try again.');
         setMessages(prev => [...prev, { 
           role: 'assistant', 
-          content: 'Sorry, I\'m having trouble connecting. Please try again.' 
+          content: "Sorry, I'm having trouble connecting. Please try again." 
         }]);
       }
     } finally {
@@ -79,61 +77,112 @@ export default function AIAssistant() {
   };
 
   return (
-    <div>
-      <h1 className="page-title">AI Assistant</h1>
-      <p className="page-sub">Powered by AI · Video editing topics only (pre-production to post-production)</p>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '10px' }}>
+      <h1 className="page-title" style={{ fontSize: '26px', marginBottom: '6px' }}>AI Assistant</h1>
+      <p className="page-sub" style={{ fontSize: '13px', marginBottom: '20px' }}>Powered by AI · Video editing topics only (pre-production to post-production)</p>
 
-      <div className="card" style={{ padding:0, overflow:'hidden' }}>
+      <div className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '600px', border: '1px solid var(--cream)', borderRadius: '12px', background: 'var(--card-bg, #fff)' }}>
+        
         {/* Header */}
-        <div style={{ padding:'12px 16px', borderBottom:'1px solid var(--cream)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-            <div style={{ width:8, height:8, borderRadius:'50%', background:'#3d6b4a' }}></div>
-            <span style={{ fontSize:'12px', fontWeight:'500', color:'var(--wine)' }}>MMS AI Assistant</span>
-            <span className="badge badge-wine">Video Editing Only</span>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#3d6b4a', boxShadow: '0 0 8px #3d6b4a' }}></div>
+            <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--wine)' }}>MMS AI Assistant</span>
+            <span className="badge badge-wine" style={{ fontSize: '11px', padding: '3px 8px' }}>Video Editing Only</span>
           </div>
-          <button className="btn btn-outline" style={{ fontSize:'11px', padding:'4px 10px' }} onClick={clearChat}>Clear</button>
+          <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 14px', borderRadius: '6px' }} onClick={clearChat}>Clear Chat</button>
         </div>
 
-        {/* Messages */}
-        <div className="chat-messages">
-          {messages.map((m, i) => (
-            <div key={i} className={`msg-wrap ${m.role === 'user' ? 'user' : ''}`}>
-              {m.role === 'assistant' && <div className="msg-name">MMS AI</div>}
-              <div className={`msg-bubble ${m.role === 'user' ? 'user' : 'ai'}`}>{m.content}</div>
-            </div>
-          ))}
+        {/* Messages Body */}
+        <div className="chat-messages" style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px', background: 'rgba(0,0,0,0.01)' }}>
+          {messages.map((m, i) => {
+            const isUser = m.role === 'user';
+            return (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start', maxWidth: '85%', alignSelf: isUser ? 'flex-end' : 'flex-start' }}>
+                {!isUser && (
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--wine)', marginBottom: '4px', marginLeft: '4px' }}>
+                    MMS AI
+                  </span>
+                )}
+                <div 
+                  style={{ 
+                    padding: '12px 18px', 
+                    borderRadius: isUser ? '16px 16px 2px 16px' : '16px 16px 16px 2px', 
+                    background: isUser ? 'var(--wine)' : 'var(--cream, #f5f2ed)', 
+                    color: isUser ? '#f5f2ed' : 'var(--text, #333)', 
+                    fontSize: '14.5px', 
+                    lineHeight: '1.5',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word'
+                  }}
+                >
+                  {m.content}
+                </div>
+              </div>
+            );
+          })}
+          
           {loading && (
-            <div className="msg-wrap">
-              <div className="msg-name">MMS AI</div>
-              <div className="msg-bubble ai" style={{ color:'var(--muted)', fontStyle:'italic' }}>Thinking...</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', maxWidth: '85%', alignSelf: 'flex-start' }}>
+              <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--wine)', marginBottom: '4px', marginLeft: '4px' }}>
+                MMS AI
+              </span>
+              <div 
+                style={{ 
+                  padding: '12px 18px', 
+                  borderRadius: '16px 16px 16px 2px', 
+                  background: 'var(--cream, #f5f2ed)', 
+                  color: 'var(--muted)', 
+                  fontSize: '14px', 
+                  fontStyle: 'italic',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                Thinking...
+              </div>
             </div>
           )}
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
-        <div className="chat-input-area">
+        {/* Input Bar */}
+        <div style={{ padding: '16px', borderTop: '1px solid var(--cream)', background: 'rgba(255,255,255,0.03)', display: 'flex', gap: '10px', alignItems: 'center' }}>
           <input
             className="form-input"
-            style={{ flex:1 }}
-            placeholder="Ask about video editing..."
+            style={{ flex: 1, padding: '12px 16px', fontSize: '14px', borderRadius: '8px', border: '1px solid var(--cream)', outline: 'none', background: 'var(--bg)' }}
+            placeholder="Type your message about video editing here..."
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
             disabled={loading}
           />
-          <button className="btn btn-wine" onClick={() => send()} disabled={loading || !input.trim()}>
-            {loading ? <span className="spinner" /> : 'Send'}
+          <button 
+            className="btn btn-wine" 
+            style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600', borderRadius: '8px', height: '100%', minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+            onClick={() => send()} 
+            disabled={loading || !input.trim()}
+          >
+            {loading ? <span className="spinner" style={{ width: '16px', height: '16px' }} /> : 'Send'}
           </button>
         </div>
       </div>
 
-      {/* Quick asks */}
-      <div style={{ marginTop:'12px' }}>
-        <div style={{ fontSize:'11px', color:'var(--muted)', marginBottom:'8px' }}>Suggested questions:</div>
-        <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
+      {/* Suggested Quick Asks Section */}
+      <div style={{ marginTop: '20px' }}>
+        <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: '500', marginBottom: '10px', marginLeft: '2px' }}>
+          Suggested questions:
+        </div>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {QUICK_ASKS.map(q => (
-            <button key={q} className="btn btn-outline" style={{ fontSize:'11px', padding:'5px 12px' }} onClick={() => send(q)}>
+            <button 
+              key={q} 
+              className="btn btn-outline" 
+              style={{ fontSize: '12.5px', padding: '8px 16px', borderRadius: '20px', background: 'transparent', transition: 'all 0.2s' }} 
+              onClick={() => send(q)}
+            >
               {q}
             </button>
           ))}
